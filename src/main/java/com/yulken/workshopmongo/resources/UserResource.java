@@ -15,7 +15,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.yulken.workshopmongo.domain.Post;
 import com.yulken.workshopmongo.domain.User;
-import com.yulken.workshopmongo.dto.AuthorDTO;
 import com.yulken.workshopmongo.dto.UserDTO;
 import com.yulken.workshopmongo.services.UserService;
 
@@ -29,7 +28,8 @@ public class UserResource {
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<UserDTO>> findAll() {
 		List<User> list = service.findAll();
-		List<UserDTO> listDto = list.stream().map(x -> new UserDTO(x)).collect(Collectors.toList());
+		List<UserDTO> listDto = list.stream().
+				map(x -> new UserDTO(x)).collect(Collectors.toList());
 		return ResponseEntity.ok().body(listDto);
 	}
 
@@ -45,17 +45,18 @@ public class UserResource {
 		return ResponseEntity.ok().body(user.getPosts());
 	}
 	
-	
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Void> insert(@RequestBody UserDTO objDto) {
 		User obj = service.fromDTO(objDto);
 		service.insert(obj);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().
+				path("/{id}").buildAndExpand(obj.getId()).toUri();
 		return ResponseEntity.created(uri).build();
 	}
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<Void> update(@RequestBody UserDTO objDto, @PathVariable String id) {
+	public ResponseEntity<Void> update(@RequestBody UserDTO objDto,
+			@PathVariable String id) {
 		User obj = service.fromDTO(objDto);
 		obj.setId(id);
 		service.update(obj);
