@@ -1,5 +1,6 @@
 package com.yulken.workshopmongo.resources;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +16,11 @@ import com.yulken.workshopmongo.resources.util.URL;
 import com.yulken.workshopmongo.services.PostService;
 
 @RestController
-@RequestMapping(value="/posts")
+@RequestMapping(value = "/posts")
 public class PostResource {
 	@Autowired
 	private PostService service;
-	
+
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Post>> findAll() {
 		List<Post> list = service.findAll();
@@ -31,12 +32,28 @@ public class PostResource {
 		Post post = service.findById(id);
 		return ResponseEntity.ok().body(post);
 	}
-	
+
 	@RequestMapping(value = "/titlesearch", method = RequestMethod.GET)
-	public ResponseEntity<List<Post>> findByTitle(@RequestParam(value="text", defaultValue = "")  String text) {
-		text = URL.decodeParam(text); 
+	public ResponseEntity<List<Post>> findByTitle(@RequestParam(value = "text", defaultValue = "") String text) {
+
+		text = URL.decodeParam(text);
 		List<Post> list = service.findByTitle(text);
 		return ResponseEntity.ok().body(list);
 	}
+
+	@RequestMapping(value = "/fullsearch", method = RequestMethod.GET)
+	public ResponseEntity<List<Post>> fullSearch(
+			@RequestParam(value = "text", defaultValue = "") String text,
+			@RequestParam(value = "min-date", defaultValue = "") String minDate,
+			@RequestParam(value = "max-date", defaultValue = "") String maxDate
+			) {
+		
+		text = URL.decodeParam(text);
+		Date min = URL.parseDate(minDate, new Date(0L));
+		Date max = URL.parseDate(maxDate, new Date());
+		List<Post> list = service.fullSearch(text, min, max);
+		return ResponseEntity.ok().body(list);
 	
+	}
+
 }
